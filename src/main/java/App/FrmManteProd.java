@@ -104,6 +104,21 @@ public class FrmManteProd extends JFrame {
 		cboCategorias = new JComboBox();
 		cboCategorias.setBounds(122, 70, 86, 22);
 		contentPane.add(cboCategorias);
+		JButton btnBuscar = new JButton("Buscar");
+
+		btnBuscar.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+
+				buscar();
+
+			}
+
+		});
+
+		btnBuscar.setBounds(324, 60, 89, 23);
+
+		contentPane.add(btnBuscar);
 
 		JLabel lblCategora = new JLabel("Categor\u00EDa");
 		lblCategora.setBounds(10, 74, 102, 14);
@@ -145,7 +160,7 @@ public class FrmManteProd extends JFrame {
 		cboProveedores = new JComboBox<String>();
 		cboProveedores.setBounds(300, 104, 120, 22);
 		contentPane.add(cboProveedores);
-		
+
 		llenaCombo();
 	}
 
@@ -190,7 +205,7 @@ public class FrmManteProd extends JFrame {
 			txtSalida.append("Categoria: " + p.getCategoria().getDescripcion() + "\n");
 			txtSalida.append("Estado   : " + Integer.toString(p.getEstado()) + "\n");
 			txtSalida.append("Id Proveedor: " + p.getIdProvedor() + "\n");
-			txtSalida.append("Proveedor: " + p.getProveedor().getNombre_rs()+ "\n");
+			txtSalida.append("Proveedor: " + p.getProveedor().getNombre_rs() + "\n");
 		}
 
 		em.close();
@@ -199,17 +214,17 @@ public class FrmManteProd extends JFrame {
 
 	void registrar() {
 
-		//entradas
+		// entradas
 		String codigo = txtCódigo.getText();
 		String descripcion = txtDescripcion.getText();
-		int estado=1;
+		int estado = 1;
 		int stock = Integer.parseInt(txtStock.getText());
 		double precio = Double.parseDouble(txtPrecio.getText());
-		int categoria =cboCategorias.getSelectedIndex();
-		int proveedor=cboProveedores.getSelectedIndex();
-		
-		//Proceso
-		Producto p =new Producto();
+		int categoria = cboCategorias.getSelectedIndex();
+		int proveedor = cboProveedores.getSelectedIndex();
+
+		// Proceso
+		Producto p = new Producto();
 		p.setIdcategoria(categoria);
 		p.setCodigo(codigo);
 		p.setDescripcion(descripcion);
@@ -217,23 +232,31 @@ public class FrmManteProd extends JFrame {
 		p.setIdProvedor(proveedor);
 		p.setPrecio(precio);
 		p.setStock(stock);
-		
+
 		em.getTransaction().begin();
-		
+
 		em.persist(p);
 		em.getTransaction().commit();
 		em.close();
-		
+
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	void buscar() {
+
+		// empezo la transaccion
+		em.getTransaction().begin();
+		// proceso -- buscar usuario
+		Producto p = em.find(Producto.class, txtCódigo.getText());
+		// Salida
+		txtDescripcion.setText(p.getDescripcion());
+		cboCategorias.setSelectedItem(p.getCategoria().getDescripcion());
+		txtPrecio.setText(Double.toString(p.getPrecio()));
+		txtStock.setText(Integer.toString(p.getStock()));
+		cboProveedores.setSelectedItem(p.getProveedor().getNombre_rs());
+		// confirmar la transaccion
+		em.getTransaction().commit();
+		em.close();
+
+	}
 
 }
